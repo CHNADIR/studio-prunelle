@@ -22,10 +22,6 @@ class TypeVente
     #[Assert\Length(max: 100, maxMessage: "Le nom du type de vente ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $name = null;
 
-    #[Assert\NotBlank]
-    #[Assert\Email]
-    private ?string $email = null;
-
     public function getId(): ?int
     {
         return $this->id;

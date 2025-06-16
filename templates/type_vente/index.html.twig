@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TypeVente index{% endblock %}
+
+{% block body %}
+    <h1>TypeVente index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for type_vente in type_ventes %}
+            <tr>
+                <td>{{ type_vente.id }}</td>
+                <td>{{ type_vente.name }}</td>
+                <td>
+                    <a href="{{ path('app_type_vente_show', {'id': type_vente.id}) }}">show</a>
+                    <a href="{{ path('app_type_vente_edit', {'id': type_vente.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_type_vente_new') }}">Create new</a>
+{% endblock %}

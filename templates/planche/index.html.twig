@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planche index{% endblock %}
+
+{% block body %}
+    <h1>Planche index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Categorie</th>
+                <th>DescriptionContenu</th>
+                <th>ImageFilename</th>
+                <th>Prix</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for planche in planches %}
+            <tr>
+                <td>{{ planche.id }}</td>
+                <td>{{ planche.nom }}</td>
+                <td>{{ planche.categorie }}</td>
+                <td>{{ planche.descriptionContenu }}</td>
+                <td>{{ planche.imageFilename }}</td>
+                <td>{{ planche.prix }}</td>
+                <td>
+                    <a href="{{ path('app_planche_show', {'id': planche.id}) }}">show</a>
+                    <a href="{{ path('app_planche_edit', {'id': planche.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_planche_new') }}">Create new</a>
+{% endblock %}

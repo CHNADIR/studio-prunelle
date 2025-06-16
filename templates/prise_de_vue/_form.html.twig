@@ -1,4 +1,84 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+    <fieldset class="mb-4">
+        <legend class="fs-5 fw-bold text-primary">Informations générales</legend>
+        <div class="card">
+            <div class="card-body bg-light">
+                {{ form_row(form.date) }}
+                {{ form_row(form.photographe) }}
+                {{ form_row(form.ecole) }}
+                {{ form_row(form.typePrise) }}
+                {{ form_row(form.theme) }}
+            </div>
+        </div>
+    </fieldset>
+    
+    <fieldset class="mb-4">
+        <legend class="fs-5 fw-bold text-primary">Détails de la session</legend>
+        <div class="card">
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="col-md-6">{{ form_row(form.nombreEleves) }}</div>
+                    <div class="col-md-6">{{ form_row(form.nombreClasses) }}</div>
+                </div>
+                {{ form_row(form.typeVente) }}
+            </div>
+        </div>
+    </fieldset>
+    
+    <fieldset class="mb-4">
+        <legend class="fs-5 fw-bold text-primary">Tarification</legend>
+        <div class="card">
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="col-md-6">{{ form_row(form.prixEcole) }}</div>
+                    <div class="col-md-6">{{ form_row(form.prixParent) }}</div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    
+    <fieldset class="mb-4">
+        <legend class="fs-5 fw-bold text-primary">Planches sélectionnées</legend>
+        <div class="card">
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="col-md-6">{{ form_row(form.planchesIndividuel) }}</div>
+                    <div class="col-md-6">{{ form_row(form.planchesFratrie) }}</div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    
+    <fieldset class="mb-4">
+        <legend class="fs-5 fw-bold text-primary">Commentaire</legend>
+        <div class="card">
+            <div class="card-body bg-light">
+                {{ form_row(form.commentaire) }}
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="mb-4">
+        <legend class="fs-5 fw-bold text-primary">Informations complémentaires</legend>
+        <div class="card">
+            <div class="card-body bg-light">
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form_row(form.frequence) }}
+                        {{ form_row(form.baseDeDonneeUtilisee) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_row(form.jourDecharge) }}
+                        {{ form_row(form.endroitInstallation) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-save"></i> {{ button_label|default('Enregistrer') }}
+        </button>
+    </div>
 {{ form_end(form) }}

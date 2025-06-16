@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\PriseDeVue;
-use App\Form\PriseDeVueForm;
+use App\Form\PriseDeVueType;
 use App\Repository\PriseDeVueRepository;
 use App\Security\Voter\PriseDeVueVoter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,7 +42,7 @@ final class PriseDeVueController extends AbstractController
         $this->denyAccessUnlessGranted(PriseDeVueVoter::CREATE, null);
         
         $priseDeVue = new PriseDeVue();
-        $form = $this->createForm(PriseDeVueForm::class, $priseDeVue, [
+        $form = $this->createForm(PriseDeVueType::class, $priseDeVue, [
             'can_edit_full' => true,
         ]);
         $form->handleRequest($request);
@@ -86,7 +86,7 @@ final class PriseDeVueController extends AbstractController
             throw $this->createAccessDeniedException('Vous n\'avez pas le droit de modifier cette prise de vue.');
         }
         
-        $form = $this->createForm(PriseDeVueForm::class, $priseDeVue, [
+        $form = $this->createForm(PriseDeVueType::class, $priseDeVue, [
             'can_edit_full' => $canEditFull,
         ]);
         $form->handleRequest($request);

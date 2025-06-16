@@ -1,14 +1,68 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Studio Prunelle - Accueil{% endblock %}
+{% block title %}Accueil - {{ parent() }}{% endblock %}
 
 {% block body %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8 text-center">
-            <h1>Bienvenue sur Studio Prunelle</h1>
-            <p class="lead mt-4">Votre destination pour des créations uniques.</p>
+    <div class="jumbotron">
+        <h1 class="display-4">Bienvenue sur Studio Prunelle</h1>
+        <p class="lead">Système de gestion des prises de vue pour écoles</p>
+        <hr class="my-4">
+        <p>Utilisez la navigation ci-dessus pour accéder aux différentes sections</p>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Écoles</div>
+                <div class="card-body">
+                    <p>Gérer les écoles clientes</p>
+                    {% if is_granted('ROLE_USER') %}
+                        <a href="{{ path('app_ecole_index') }}" class="btn btn-primary">Voir les écoles</a>
+                    {% else %}
+                        <button class="btn btn-secondary" disabled>Voir les écoles</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Prises de vue</div>
+                <div class="card-body">
+                    <p>Gérer les séances photo</p>
+                    {% if is_granted('ROLE_PHOTOGRAPHE') or is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
+                        <a href="{{ path('app_prise_de_vue_index') }}" class="btn btn-primary">Voir les prises de vue</a>
+                    {% else %}
+                        <button class="btn btn-secondary" disabled>Voir les prises de vue</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">Référentiels</div>
+                <div class="card-body">
+                    <p>Gérer les données de référence</p>
+                    {% if is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') or is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_theme_index') }}" class="btn btn-primary">Voir les thèmes</a>
+                    {% else %}
+                        <button class="btn btn-secondary" disabled>Voir les thèmes</button>
+                    {% endif %}
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="row mt-2">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">Administration</div>
+                <div class="card-body">
+                    <p>Gérer les utilisateurs et les paramètres</p>
+                    <a href="{{ path('admin_user_index') }}" class="btn btn-primary">Gestion des utilisateurs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 {% endblock %}

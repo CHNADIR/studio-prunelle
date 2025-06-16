@@ -1,13 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Ecole{% endblock %}
+{% block title %}Modifier l'école: {{ ecole.nom }}{% endblock %}
 
 {% block body %}
-    <h1>Edit Ecole</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Modifier l'école: {{ ecole.nom }}</h1>
+        <a href="{{ path('app_ecole_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
 
-    {{ include('ecole/_form.html.twig', {'button_label': 'Update'}) }}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 
-    <a href="{{ path('app_ecole_index') }}">back to list</a>
+    <div class="card">
+        <div class="card-body">
+            {{ include('ecole/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
+        </div>
+    </div>
 
-    {{ include('ecole/_delete_form.html.twig') }}
+    <div class="mt-3 d-flex justify-content-end">
+        {{ include('ecole/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}

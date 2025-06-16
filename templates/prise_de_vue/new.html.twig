@@ -1,11 +1,29 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New PriseDeVue{% endblock %}
+{% block title %}Créer une nouvelle prise de vue{% endblock %}
 
 {% block body %}
-    <h1>Create new PriseDeVue</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Créer une nouvelle prise de vue</h1>
+        <a href="{{ path('app_prise_de_vue_index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
 
-    {{ include('prise_de_vue/_form.html.twig') }}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 
-    <a href="{{ path('app_prise_de_vue_index') }}">back to list</a>
+    <div class="card">
+        <div class="card-body">
+            {{ include('prise_de_vue/_form.html.twig', {'button_label': 'Créer la prise de vue'}) }}
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Planche{% endblock %}
+
+{% block body %}
+    <h1>Planche</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ planche.id }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ planche.nom }}</td>
+            </tr>
+            <tr>
+                <th>Categorie</th>
+                <td>{{ planche.categorie }}</td>
+            </tr>
+            <tr>
+                <th>DescriptionContenu</th>
+                <td>{{ planche.descriptionContenu }}</td>
+            </tr>
+            <tr>
+                <th>ImageFilename</th>
+                <td>{{ planche.imageFilename }}</td>
+            </tr>
+            <tr>
+                <th>Prix</th>
+                <td>{{ planche.prix }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_planche_index') }}">back to list</a>
+
+    <a href="{{ path('app_planche_edit', {'id': planche.id}) }}">edit</a>
+
+    {{ include('planche/_delete_form.html.twig') }}
+{% endblock %}

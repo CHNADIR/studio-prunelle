@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}TypePrise index{% endblock %}
+
+{% block body %}
+    <h1>TypePrise index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for type_prise in type_prises %}
+            <tr>
+                <td>{{ type_prise.id }}</td>
+                <td>{{ type_prise.name }}</td>
+                <td>
+                    <a href="{{ path('app_type_prise_show', {'id': type_prise.id}) }}">show</a>
+                    <a href="{{ path('app_type_prise_edit', {'id': type_prise.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_type_prise_new') }}">Create new</a>
+{% endblock %}

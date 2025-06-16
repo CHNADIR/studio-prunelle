@@ -22,12 +22,6 @@ class Theme
     #[Assert\Length(max: 100, maxMessage: "Le nom du thème ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $name = null;
 
-    // La propriété $email semble déplacée ici. Si elle est nécessaire, ajoutez des Assertions.
-    // Sinon, envisagez de la supprimer.
-    // #[Assert\NotBlank]
-    // #[Assert\Email]
-    // private ?string $email = null; 
-
     public function getId(): ?int
     {
         return $this->id;

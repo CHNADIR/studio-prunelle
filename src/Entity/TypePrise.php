@@ -22,11 +22,6 @@ class TypePrise
     #[Assert\Length(max: 100, maxMessage: "Le nom du type de prise ne doit pas dépasser {{ limit }} caractères.")]
     private ?string $name = null;
 
-    
-    #[Assert\NotBlank]
-    #[Assert\Email]
-    private ?string $email = null;
-
     public function getId(): ?int
     {
         return $this->id;
