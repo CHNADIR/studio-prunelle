@@ -1,0 +1,71 @@
+{# filepath: /home/nch/projects/studio-prunelle/templates/admin/user/index.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Gestion des utilisateurs</h1>
+    
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    
+    <a href="{{ path('admin_user_new') }}" class="btn btn-primary mb-3">Créer un nouvel utilisateur</a>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Email</th>
+                    <th>Rôles</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% for role in user.roles %}
+                            {% set badge_class = 'bg-secondary' %}
+                            {% if role == 'ROLE_SUPER_ADMIN' %}
+                                {% set badge_class = 'bg-danger' %}
+                            {% elseif role == 'ROLE_ADMIN' %}
+                                {% set badge_class = 'bg-warning text-dark' %}
+                            {% elseif role == 'ROLE_MODERATOR' %}
+                                {% set badge_class = 'bg-info text-dark' %}
+                            {% elseif role == 'ROLE_EDITOR' %}
+                                {% set badge_class = 'bg-primary' %}
+                            {% endif %}
+                            <span class="badge {{ badge_class }}">{{ role }}</span>
+                            {% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{{ path('admin_user_show', {'id': user.id}) }}" class="btn btn-sm btn-info">Voir</a>
+                            <a href="{{ path('admin_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-warning">Modifier</a>
+                            <form method="post" action="{{ path('admin_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?');" style="display: inline-block;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                <button class="btn btn-sm btn-danger">Supprimer</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Aucun utilisateur trouvé</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

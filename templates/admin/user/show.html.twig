@@ -1,0 +1,33 @@
+{# filepath: /home/nch/projects/studio-prunelle/templates/admin/user/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'utilisateur{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Détails de l'utilisateur</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ user.email }}</h5>
+            <p><strong>ID:</strong> {{ user.id }}</p>
+            <p>
+                <strong>Rôles:</strong>
+                {% for role in user.roles %}
+                    <span class="badge bg-secondary">{{ role }}</span>
+                {% endfor %}
+            </p>
+        </div>
+        <div class="card-footer">
+            <div class="btn-group">
+                <a href="{{ path('admin_user_edit', {'id': user.id}) }}" class="btn btn-warning">Modifier</a>
+                <a href="{{ path('admin_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
+                <form method="post" action="{{ path('admin_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur?');" style="display: inline-block;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                    <button class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

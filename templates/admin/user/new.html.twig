@@ -1,0 +1,14 @@
+{# filepath: /home/nch/projects/studio-prunelle/templates/admin/user/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel utilisateur{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Créer un nouvel utilisateur</h1>
+    
+    {{ include('admin/user/_form.html.twig') }}
+    
+    <a href="{{ path('admin_user_index') }}" class="btn btn-secondary">Retour à la liste</a>
+</div>
+{% endblock %}
