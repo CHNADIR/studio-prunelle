@@ -6,7 +6,6 @@ use App\Entity\Theme;
 use App\Form\ThemeType;
 use App\Repository\ThemeRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,74 +13,87 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/theme')]
 #[IsGranted('ROLE_RESPONSABLE_ADMINISTRATIF')]
-final class ThemeController extends AbstractController
+final class ThemeController extends AbstractReferentielController
 {
-    #[Route('/', name: 'app_theme_index', methods: ['GET'])]
-    public function index(ThemeRepository $themeRepository): Response
+    private ThemeRepository $themeRepository;
+    
+    // Injection du repository dans le constructeur
+    public function __construct(ThemeRepository $themeRepository)
     {
-        return $this->render('theme/index.html.twig', [
-            'themes' => $themeRepository->findAll(),
-        ]);
+        $this->themeRepository = $themeRepository;
     }
-
+    
+    protected function getEntityClass(): string
+    {
+        return Theme::class;
+    }
+    
+    protected function getFormClass(): string
+    {
+        return ThemeType::class;
+    }
+    
+    protected function getEntityName(): string
+    {
+        return 'thème';
+    }
+    
+    protected function getRouteName(): string
+    {
+        return 'app_theme';
+    }
+    
+    protected function getTemplateBase(): string
+    {
+        return 'theme';
+    }
+    
+    protected function getEntityVarName(): string
+    {
+        return 'theme';
+    }
+    
+    protected function getRepository()
+    {
+        return $this->themeRepository;
+    }
+    
+    protected function getEntity()
+    {
+        // Récupérer l'ID depuis la route
+        $request = $this->container->get('request_stack')->getCurrentRequest();
+        $id = $request->attributes->get('id');
+        
+        return $this->themeRepository->find($id);
+    }
+    
+    #[Route('/', name: 'app_theme_index', methods: ['GET'])]
+    public function index(): Response
+    {
+        return parent::index();
+    }
+    
     #[Route('/new', name: 'app_theme_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $theme = new Theme();
-        $form = $this->createForm(ThemeType::class, $theme);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($theme);
-            $entityManager->flush();
-            
-            $this->addFlash('success', 'Le thème a été créé avec succès.');
-            return $this->redirectToRoute('app_theme_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('theme/new.html.twig', [
-            'theme' => $theme,
-            'form' => $form,
-        ]);
+        return parent::new($request, $entityManager);
     }
-
+    
     #[Route('/{id}', name: 'app_theme_show', methods: ['GET'])]
-    public function show(Theme $theme): Response
+    public function show(): Response
     {
-        return $this->render('theme/show.html.twig', [
-            'theme' => $theme,
-        ]);
+        return parent::show();
     }
-
+    
     #[Route('/{id}/edit', name: 'app_theme_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Theme $theme, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ThemeType::class, $theme);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            
-            $this->addFlash('success', 'Le thème a été modifié avec succès.');
-            return $this->redirectToRoute('app_theme_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('theme/edit.html.twig', [
-            'theme' => $theme,
-            'form' => $form,
-        ]);
+        return parent::edit($request, $entityManager);
     }
-
+    
     #[Route('/{id}', name: 'app_theme_delete', methods: ['POST'])]
-    public function delete(Request $request, Theme $theme, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$theme->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($theme);
-            $entityManager->flush();
-            
-            $this->addFlash('success', 'Le thème a été supprimé avec succès.');
-        }
-
-        return $this->redirectToRoute('app_theme_index', [], Response::HTTP_SEE_OTHER);
+        return parent::delete($request, $entityManager);
     }
 }
