@@ -98,6 +98,15 @@ services:
       timeout: 5s
       retries: 3
 
+  node:
+    image: node:20-alpine
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    profiles: ["dev"]
+    ports:
+      - "8888:8888" # Pour webpack-dev-server
+
 volumes:
   database_data:
     name: prunelle_mysql_data

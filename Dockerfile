@@ -4,8 +4,7 @@ FROM node:18-alpine as node_builder
 WORKDIR /app_node
 
 COPY package.json ./
-COPY package-lock.json ./ 
-# Décommentez et assurez-vous que package-lock.json est versionné
+COPY package-lock.json ./
 
 RUN npm install
 
@@ -45,17 +44,14 @@ RUN apk add --no-cache \
     mbstring \
     xml
 
-# Configurer OPcache pour la production
+# Configurer OPcache
 RUN { \
     echo 'opcache.memory_consumption=128'; \
     echo 'opcache.interned_strings_buffer=8'; \
     echo 'opcache.max_accelerated_files=4000'; \
-    echo 'opcache.revalidate_freq=2'; \
+    echo 'opcache.revalidate_freq=0'; \
     echo 'opcache.fast_shutdown=1'; \
     } > /usr/local/etc/php/conf.d/opcache-recommended.ini
-
-# Configurer le php.ini pour la production
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -67,17 +63,20 @@ RUN addgroup -g $GID -S appgroup && \
 # Définir les permissions sur le répertoire de travail
 RUN chown -R appuser:appgroup /var/www/html
 
-# Copier les fichiers de composer d'abord pour exploiter le cache Docker
+# Copier les fichiers de composer pour exploitation du cache Docker
 COPY --chown=appuser:appgroup composer.json composer.lock symfony.lock ./
 
-# Installer les dépendances PHP en mode non-root
+# Installer les dépendances PHP
 USER appuser
 RUN composer install --prefer-dist --no-scripts --no-progress --no-interaction
 
 # Copier le reste de l'application
 COPY --chown=appuser:appgroup . .
 
-# Créer les répertoires nécessaires et définir les permissions
+# Copier les assets compilés depuis l'étape node_builder
+COPY --from=node_builder /app_node/public/build /var/www/html/public/build
+
+# Créer les répertoires nécessaires
 RUN mkdir -p var/cache var/log var/uploads public/uploads
 
 # Retourner à l'utilisateur root pour le démarrage de PHP-FPM
