@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PriseDeVue index{% endblock %}
+
+{% block body %}
+    <h1>PriseDeVue index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Date</th>
+                <th>NombreEleves</th>
+                <th>NombreClasses</th>
+                <th>PrixEcole</th>
+                <th>PrixParent</th>
+                <th>Commentaire</th>
+                <th>Frequence</th>
+                <th>BaseDeDonneeUtilisee</th>
+                <th>JourDecharge</th>
+                <th>EndroitInstallation</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for prise_de_vue in prise_de_vues %}
+            <tr>
+                <td>{{ prise_de_vue.id }}</td>
+                <td>{{ prise_de_vue.date ? prise_de_vue.date|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ prise_de_vue.nombreEleves }}</td>
+                <td>{{ prise_de_vue.nombreClasses }}</td>
+                <td>{{ prise_de_vue.prixEcole }}</td>
+                <td>{{ prise_de_vue.prixParent }}</td>
+                <td>{{ prise_de_vue.commentaire }}</td>
+                <td>{{ prise_de_vue.frequence }}</td>
+                <td>{{ prise_de_vue.baseDeDonneeUtilisee }}</td>
+                <td>{{ prise_de_vue.jourDecharge }}</td>
+                <td>{{ prise_de_vue.endroitInstallation }}</td>
+                <td>
+                    <a href="{{ path('app_prise_de_vue_show', {'id': prise_de_vue.id}) }}">show</a>
+                    <a href="{{ path('app_prise_de_vue_edit', {'id': prise_de_vue.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_prise_de_vue_new') }}">Create new</a>
+{% endblock %}

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EcoleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -57,6 +59,17 @@ class Ecole
     #[ORM\Column]
     #[Assert\NotNull(message: "Le statut actif doit être défini.")]
     private ?bool $active = null;
+
+    /**
+     * @var Collection<int, PriseDeVue>
+     */
+    #[ORM\OneToMany(targetEntity: PriseDeVue::class, mappedBy: 'ecole')]
+    private Collection $priseDeVues;
+
+    public function __construct()
+    {
+        $this->priseDeVues = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -174,5 +187,35 @@ class Ecole
     public function __toString(): string
     {
         return $this->nom;
+    }
+
+    /**
+     * @return Collection<int, PriseDeVue>
+     */
+    public function getPriseDeVues(): Collection
+    {
+        return $this->priseDeVues;
+    }
+
+    public function addPriseDeVue(PriseDeVue $priseDeVue): static
+    {
+        if (!$this->priseDeVues->contains($priseDeVue)) {
+            $this->priseDeVues->add($priseDeVue);
+            $priseDeVue->setEcole($this);
+        }
+
+        return $this;
+    }
+
+    public function removePriseDeVue(PriseDeVue $priseDeVue): static
+    {
+        if ($this->priseDeVues->removeElement($priseDeVue)) {
+            // set the owning side to null (unless already changed)
+            if ($priseDeVue->getEcole() === $this) {
+                $priseDeVue->setEcole(null);
+            }
+        }
+
+        return $this;
     }
 }
