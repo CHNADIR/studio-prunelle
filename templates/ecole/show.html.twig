@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ecole{% endblock %}
+
+{% block body %}
+    <h1>Ecole</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ ecole.id }}</td>
+            </tr>
+            <tr>
+                <th>Code</th>
+                <td>{{ ecole.code }}</td>
+            </tr>
+            <tr>
+                <th>Genre</th>
+                <td>{{ ecole.genre }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ ecole.nom }}</td>
+            </tr>
+            <tr>
+                <th>Rue</th>
+                <td>{{ ecole.rue }}</td>
+            </tr>
+            <tr>
+                <th>Ville</th>
+                <td>{{ ecole.ville }}</td>
+            </tr>
+            <tr>
+                <th>CodePostal</th>
+                <td>{{ ecole.codePostal }}</td>
+            </tr>
+            <tr>
+                <th>Telephone</th>
+                <td>{{ ecole.telephone }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ ecole.email }}</td>
+            </tr>
+            <tr>
+                <th>Active</th>
+                <td>{{ ecole.active ? 'Yes' : 'No' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_ecole_index') }}">back to list</a>
+
+    <a href="{{ path('app_ecole_edit', {'id': ecole.id}) }}">edit</a>
+
+    {{ include('ecole/_delete_form.html.twig') }}
+{% endblock %}

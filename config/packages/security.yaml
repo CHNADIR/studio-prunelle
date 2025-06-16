@@ -28,20 +28,18 @@ security:
 
     # Hiérarchie des rôles
     role_hierarchy:
-        ROLE_EDITOR: ROLE_USER
-        ROLE_MODERATOR: ROLE_EDITOR
-        ROLE_ADMIN: ROLE_MODERATOR
+        ROLE_PHOTOGRAPHE: ROLE_USER
+        ROLE_RESPONSABLE_ADMINISTRATIF: ROLE_USER
+        ROLE_ADMIN: [ROLE_RESPONSABLE_ADMINISTRATIF, ROLE_PHOTOGRAPHE]
         ROLE_SUPER_ADMIN: [ROLE_ADMIN]
     
     # Une seule section access_control
     access_control:
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS }
-        - { path: ^/admin/super, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/admin/user, roles: ROLE_ADMIN }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/moderate, roles: ROLE_MODERATOR }
-        - { path: ^/edit, roles: ROLE_EDITOR }
+        - { path: ^/ecole/new$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
+        - { path: ^/ecole/\d+/edit$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
+        - { path: ^/ecole$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
 
 when@test:
     security:
