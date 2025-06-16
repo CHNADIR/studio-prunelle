@@ -2,18 +2,16 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\PriseDeVue;
-use App\Entity\User;
+use App\Entity\Planche;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class PriseDeVueVoter extends Voter
+class PlancheVoter extends Voter
 {
     public const VIEW = 'VIEW';
     public const EDIT = 'EDIT';
-    public const EDIT_COMMENT = 'EDIT_COMMENT';
     public const DELETE = 'DELETE';
     public const CREATE = 'CREATE';
 
@@ -27,16 +25,16 @@ class PriseDeVueVoter extends Voter
     protected function supports(string $attribute, mixed $subject): bool
     {
         // if the attribute isn't one we support, return false
-        if (!in_array($attribute, [self::VIEW, self::EDIT, self::EDIT_COMMENT, self::DELETE, self::CREATE])) {
+        if (!in_array($attribute, [self::VIEW, self::EDIT, self::DELETE, self::CREATE])) {
             return false;
         }
 
-        // only vote on PriseDeVue objects or null for CREATE
+        // only vote on Planche objects or null for CREATE
         if ($attribute === self::CREATE) {
             return true;
         }
 
-        return $subject instanceof PriseDeVue;
+        return $subject instanceof Planche;
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
@@ -52,32 +50,9 @@ class PriseDeVueVoter extends Voter
             return true;
         }
 
-        // ROLE_PHOTOGRAPHE a des droits limités
+        // ROLE_PHOTOGRAPHE peut uniquement voir les planches
         if ($this->security->isGranted('ROLE_PHOTOGRAPHE')) {
-            /** @var PriseDeVue $priseDeVue */
-            $priseDeVue = $subject;
-            
-            // Vérifier si l'utilisateur est une instance de notre entité User
-            if (!$user instanceof User) {
-                return false;
-            }
-            
-            // Le photographe peut voir et modifier uniquement ses propres prises de vue
-            $isOwnPriseDeVue = $priseDeVue->getPhotographe() && 
-                               $priseDeVue->getPhotographe()->getId() === $user->getId();
-            
-            switch ($attribute) {
-                case self::VIEW:
-                    return $isOwnPriseDeVue;
-                
-                case self::EDIT_COMMENT:
-                    return $isOwnPriseDeVue;
-                
-                case self::EDIT:
-                case self::DELETE:
-                case self::CREATE:
-                    return false;
-            }
+            return $attribute === self::VIEW;
         }
 
         // par défaut, refuser l'accès

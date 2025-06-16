@@ -30,7 +30,8 @@ security:
     role_hierarchy:
         ROLE_PHOTOGRAPHE: ROLE_USER
         ROLE_RESPONSABLE_ADMINISTRATIF: ROLE_USER
-        ROLE_ADMIN: [ROLE_RESPONSABLE_ADMINISTRATIF, ROLE_PHOTOGRAPHE]
+        ROLE_GESTION_REFERENTIELS: ROLE_USER
+        ROLE_ADMIN: [ROLE_USER, ROLE_RESPONSABLE_ADMINISTRATIF, ROLE_PHOTOGRAPHE, ROLE_GESTION_REFERENTIELS]
         ROLE_SUPER_ADMIN: [ROLE_ADMIN]
     
     # Une seule section access_control
@@ -40,6 +41,9 @@ security:
         - { path: ^/ecole/new$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
         - { path: ^/ecole/\d+/edit$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
         - { path: ^/ecole$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
+        - { path: ^/prise/de/vue/new$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
+        - { path: ^/prise/de/vue, roles: [ROLE_PHOTOGRAPHE, ROLE_RESPONSABLE_ADMINISTRATIF] }
+        - { path: ^/admin, roles: ROLE_ADMIN }
 
 when@test:
     security:
