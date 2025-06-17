@@ -6,19 +6,23 @@ use App\Entity\Planche;
 use App\Form\PlancheType;
 use App\Repository\PlancheRepository;
 use App\Security\Voter\PlancheVoter;
+use App\Service\UploaderHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/planche')]
 #[IsGranted('ROLE_RESPONSABLE_ADMINISTRATIF')]
 final class PlancheController extends AbstractController
 {
+    public function __construct(
+        private UploaderHelper $uploaderHelper
+    ) {
+    }
+
     #[Route('/', name: 'app_planche_index', methods: ['GET'])]
     public function index(PlancheRepository $plancheRepository): Response
     {
@@ -28,7 +32,7 @@ final class PlancheController extends AbstractController
     }
 
     #[Route('/new', name: 'app_planche_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted(PlancheVoter::CREATE, null);
         
@@ -37,22 +41,11 @@ final class PlancheController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'upload d'image
+            // Gestion de l'upload d'image via le service
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
-                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-
-                try {
-                    $imageFile->move(
-                        $this->getParameter('planches_images_directory'),
-                        $newFilename
-                    );
-                    $planche->setImageFilename($newFilename);
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors du téléchargement de l\'image');
-                }
+                $newFilename = $this->uploaderHelper->uploadPlancheImage($imageFile);
+                $planche->setImageFilename($newFilename);
             }
 
             $entityManager->persist($planche);
@@ -79,7 +72,7 @@ final class PlancheController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_planche_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Planche $planche, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    public function edit(Request $request, Planche $planche, EntityManagerInterface $entityManager): Response
     {
         $this->denyAccessUnlessGranted(PlancheVoter::EDIT, $planche);
         
@@ -87,31 +80,14 @@ final class PlancheController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gestion de l'upload d'image
+            // Gestion de l'upload d'image via le service
             $imageFile = $form->get('imageFile')->getData();
             if ($imageFile) {
-                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $newFilename = $safeFilename.'-'.uniqid().'.'.$imageFile->guessExtension();
-
-                try {
-                    $imageFile->move(
-                        $this->getParameter('planches_images_directory'),
-                        $newFilename
-                    );
-                    
-                    // Supprimer l'ancienne image si elle existe
-                    if ($planche->getImageFilename()) {
-                        $oldImagePath = $this->getParameter('planches_images_directory').'/'.$planche->getImageFilename();
-                        if (file_exists($oldImagePath)) {
-                            unlink($oldImagePath);
-                        }
-                    }
-                    
-                    $planche->setImageFilename($newFilename);
-                } catch (FileException $e) {
-                    $this->addFlash('error', 'Erreur lors du téléchargement de l\'image');
-                }
+                $newFilename = $this->uploaderHelper->uploadPlancheImage(
+                    $imageFile, 
+                    $planche->getImageFilename()
+                );
+                $planche->setImageFilename($newFilename);
             }
             
             $entityManager->flush();
@@ -132,12 +108,9 @@ final class PlancheController extends AbstractController
         $this->denyAccessUnlessGranted(PlancheVoter::DELETE, $planche);
         
         if ($this->isCsrfTokenValid('delete'.$planche->getId(), $request->request->get('_token'))) {
-            // Supprimer l'image associée
+            // Supprimer l'image associée via le service
             if ($planche->getImageFilename()) {
-                $imagePath = $this->getParameter('planches_images_directory').'/'.$planche->getImageFilename();
-                if (file_exists($imagePath)) {
-                    unlink($imagePath);
-                }
+                $this->uploaderHelper->removePlancheImage($planche->getImageFilename());
             }
             
             $entityManager->remove($planche);

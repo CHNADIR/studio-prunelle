@@ -1,0 +1,36 @@
+liip_imagine:
+    # configure resolvers
+    resolvers:
+        default:
+            web_path: 
+                web_root: '%kernel.project_dir%/public'
+                cache_prefix: 'media/cache'
+                
+    # Définir un loader pour les fichiers stockés en privé
+    loaders:
+        private_filesystem_loader:
+            filesystem:
+                data_root: '%kernel.project_dir%/public'
+
+    filter_sets:
+        cache: ~
+        planche_thumbnail:
+            quality: 75
+            filters:
+                thumbnail: { size: [150, 100], mode: outbound }
+        planche_medium:
+            quality: 85
+            filters:
+                thumbnail: { size: [400, 300], mode: inset }
+        planche_large:
+            quality: 90
+            filters:
+                scale: { dim: [800, 600] }
+
+    # Le data_loader global n'est plus nécessaire si chaque filter_set spécifie le sien.
+    # data_loader: filesystem # Peut être commenté ou supprimé
+
+    # Le cache (images générées) est toujours dans public/media/cache par défaut.
+    # Nous allons sécuriser l'accès à ce cache via security.yaml.
+
+    driver: gd

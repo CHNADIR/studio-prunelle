@@ -79,6 +79,9 @@ COPY --from=node_builder /app_node/public/build /var/www/html/public/build
 # Créer les répertoires nécessaires
 RUN mkdir -p var/cache var/log var/uploads public/uploads
 
+# Ajouter cette ligne dans votre Dockerfile après la création des répertoires
+RUN chmod -R 775 var/uploads public/uploads
+
 # Retourner à l'utilisateur root pour le démarrage de PHP-FPM
 USER root
 
