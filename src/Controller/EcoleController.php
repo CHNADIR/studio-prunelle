@@ -6,6 +6,7 @@ use App\Entity\Ecole;
 use App\Form\EcoleType;
 use App\Form\EcoleSearchType;
 use App\Repository\EcoleRepository;
+use App\Repository\PriseDeVueRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -62,13 +63,21 @@ class EcoleController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_ecole_show', methods: ['GET'])]
-    public function show(Ecole $ecole): Response
+    public function show(Ecole $ecole, PriseDeVueRepository $priseDeVueRepository): Response
     {
         // Utilisez le Voter pour vérifier l'accès
         $this->denyAccessUnlessGranted('VIEW', $ecole);
         
+        // Récupération des dernières prises de vue
+        $latestPriseDeVues = $priseDeVueRepository->findLatestByEcole($ecole, 5);
+        
+        // Récupération des statistiques
+        $stats = $priseDeVueRepository->getStatsByEcole($ecole);
+        
         return $this->render('ecole/show.html.twig', [
             'ecole' => $ecole,
+            'latestPriseDeVues' => $latestPriseDeVues,
+            'stats' => $stats,
         ]);
     }
 

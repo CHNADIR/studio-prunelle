@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Ecole;
 use App\Entity\PriseDeVue;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -85,5 +86,114 @@ class PriseDeVueRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Récupère les dernières prises de vue pour une école spécifique
+     */
+    public function findLatestByEcole(Ecole $ecole, int $limit = 5): array
+    {
+        return $this->createQueryBuilder('p')
+            ->leftJoin('p.ecole', 'e')
+            ->leftJoin('p.photographe', 'u')
+            ->leftJoin('p.theme', 't')
+            ->leftJoin('p.typePrise', 'tp')
+            ->leftJoin('p.typeVente', 'tv')
+            ->leftJoin('p.planchesIndividuel', 'pi')
+            ->leftJoin('p.planchesFratrie', 'pf')
+            ->addSelect('e', 'u', 't', 'tp', 'tv', 'pi', 'pf')
+            ->where('p.ecole = :ecole')
+            ->setParameter('ecole', $ecole)
+            ->orderBy('p.date', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Calcule les statistiques des prises de vue pour une école
+     */
+    public function getStatsByEcole(Ecole $ecole): array
+    {
+        // Nombre total de prises de vue
+        $totalPrises = $this->createQueryBuilder('p')
+            ->select('COUNT(p.id) as total')
+            ->where('p.ecole = :ecole')
+            ->setParameter('ecole', $ecole)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Nombre total d'élèves photographiés
+        $totalEleves = $this->createQueryBuilder('p')
+            ->select('SUM(p.nombreEleves) as totalEleves')
+            ->where('p.ecole = :ecole')
+            ->setParameter('ecole', $ecole)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Montant total facturé à l'école
+        $totalRevenu = $this->createQueryBuilder('p')
+            ->select('SUM(p.prixEcole) as totalRevenu')
+            ->where('p.ecole = :ecole')
+            ->setParameter('ecole', $ecole)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Nombre total de classes
+        $totalClasses = $this->createQueryBuilder('p')
+            ->select('SUM(p.nombreClasses) as totalClasses')
+            ->where('p.ecole = :ecole')
+            ->setParameter('ecole', $ecole)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        // Statistiques par année
+        // Utilisons une alternative sans fonction d'extration de date
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = '
+            SELECT YEAR(p.date) as year, 
+                   COUNT(p.id) as totalPrises, 
+                   SUM(p.nombre_eleves) as totalEleves, 
+                   SUM(p.prix_ecole) as totalRevenu
+            FROM prise_de_vue p
+            WHERE p.ecole_id = :ecoleId
+            GROUP BY YEAR(p.date)
+            ORDER BY year DESC
+        ';
+        $stmt = $conn->prepare($sql);
+        $resultSet = $stmt->executeQuery(['ecoleId' => $ecole->getId()]);
+        $statsByYear = $resultSet->fetchAllAssociative();
+
+        // Types de prises les plus fréquents
+        $typePrisesStats = $this->createQueryBuilder('p')
+            ->select('tp.name, COUNT(p.id) as count')
+            ->leftJoin('p.typePrise', 'tp')
+            ->where('p.ecole = :ecole')
+            ->setParameter('ecole', $ecole)
+            ->groupBy('tp.name')
+            ->orderBy('count', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        // Thèmes les plus fréquents
+        $themesStats = $this->createQueryBuilder('p')
+            ->select('t.name, COUNT(p.id) as count')
+            ->leftJoin('p.theme', 't')
+            ->where('p.ecole = :ecole')
+            ->setParameter('ecole', $ecole)
+            ->groupBy('t.name')
+            ->orderBy('count', 'DESC')
+            ->getQuery()
+            ->getResult();
+
+        return [
+            'totalPrises' => $totalPrises ?: 0,
+            'totalEleves' => $totalEleves ?: 0,
+            'totalRevenu' => $totalRevenu ?: 0,
+            'totalClasses' => $totalClasses ?: 0,
+            'statsByYear' => $statsByYear,
+            'typePrisesStats' => $typePrisesStats,
+            'themesStats' => $themesStats
+        ];
     }
 }
