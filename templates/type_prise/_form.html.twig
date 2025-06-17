@@ -1,4 +1,12 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{% import 'form/form_macros.html.twig' as form_macros %}
+
+{{ form_macros.form_start(form) }}
+
+{% set general_content %}
+    {{ form_row(form.name) }}
+{% endset %}
+{{ form_macros.form_card('Informations', general_content) }}
+
+{{ form_macros.buttons(button_label|default('Enregistrer'), 'save', 'app_type_prise_index') }}
+
+{{ form_macros.form_end(form) }}

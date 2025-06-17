@@ -1,13 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Planche{% endblock %}
+{% block title %}Modifier Planche: {{ planche.nom }}{% endblock %}
 
 {% block body %}
-    <h1>Edit Planche</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>Modifier Planche: <span class="text-primary">{{ planche.nom }}</span></h1>
+        <a href="{{ path('app_planche_index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
 
-    {{ include('planche/_form.html.twig', {'button_label': 'Update'}) }}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endfor %}
 
-    <a href="{{ path('app_planche_index') }}">back to list</a>
+    {{ include('planche/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
 
-    {{ include('planche/_delete_form.html.twig') }}
+    {% if planche.imageFilename %}
+        <div class="mt-4">
+            <h5>Image actuelle :</h5>
+            <img src="{{ asset('uploads/planches/' ~ planche.imageFilename) }}" alt="Image actuelle de {{ planche.nom }}" class="img-thumbnail" style="max-width: 150px;">
+        </div>
+    {% endif %}
+
+    <div class="mt-3">
+        {{ include('planche/_delete_form.html.twig') }}
+    </div>
+</div>
 {% endblock %}

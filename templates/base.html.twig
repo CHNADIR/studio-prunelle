@@ -3,62 +3,129 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Studio Prunelle{% endblock %}</title>
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
-
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
             <div class="container">
-                <a class="navbar-brand" href="{{ path('home') }}">Studio Prunelle</a>
+                <a class="navbar-brand" href="{{ path('app_home') }}">Studio Prunelle</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if app.request.attributes.get('_route') starts with 'app_home' %}active{% endif %}" href="{{ path('app_home') }}">Accueil</a>
+                            </li>
+
+                            {# Accès aux écoles #}
+                            {% if is_granted('ROLE_USER') %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'app_ecole' %}active{% endif %}" href="{{ path('app_ecole_index') }}">Écoles</a>
+                                </li>
+                            {% endif %}
+
+                            {# Accès aux prises de vue #}
+                            {% if is_granted('ROLE_PHOTOGRAPHE') or is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'app_prise_de_vue' %}active{% endif %}" href="{{ path('app_prise_de_vue_index') }}">
+                                        {% if is_granted('ROLE_PHOTOGRAPHE') and not is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
+                                            Mes Prises de Vue
+                                        {% else %}
+                                            Prises de Vue
+                                        {% endif %}
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {# Menu Référentiels pour ROLE_RESPONSABLE_ADMINISTRATIF #}
+                            {% if is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
+                                <li class="nav-item dropdown {% if 
+                                    app.request.attributes.get('_route') starts with 'app_theme' or 
+                                    app.request.attributes.get('_route') starts with 'app_type_prise' or 
+                                    app.request.attributes.get('_route') starts with 'app_type_vente' or 
+                                    app.request.attributes.get('_route') starts with 'app_planche' 
+                                %}active{% endif %}">
+                                    <a class="nav-link dropdown-toggle" href="#" id="referentielsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Référentiels
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="referentielsDropdown">
+                                        <li><a class="dropdown-item {% if app.request.attributes.get('_route') starts with 'app_theme' %}active{% endif %}" href="{{ path('app_theme_index') }}">Thèmes</a></li>
+                                        <li><a class="dropdown-item {% if app.request.attributes.get('_route') starts with 'app_type_prise' %}active{% endif %}" href="{{ path('app_type_prise_index') }}">Types de Prise</a></li>
+                                        <li><a class="dropdown-item {% if app.request.attributes.get('_route') starts with 'app_type_vente' %}active{% endif %}" href="{{ path('app_type_vente_index') }}">Types de Vente</a></li>
+                                        <li><a class="dropdown-item {% if app.request.attributes.get('_route') starts with 'app_planche' %}active{% endif %}" href="{{ path('app_planche_index') }}">Planches</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+
+                            {# Menu Admin pour ROLE_ADMIN #}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li class="nav-item dropdown {% if app.request.attributes.get('_route') starts with 'app_admin' %}active{% endif %}">
+                                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Administration
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                        <li><a class="dropdown-item {% if app.request.attributes.get('_route') starts with 'admin_user' %}active{% endif %}" href="{{ path('admin_user_index') }}">Utilisateurs</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="{{ path('app_admin') }}">Tableau de bord</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
+                            
+                            {# Accès aux planches pour les photographes (référence uniquement) #}
+                            {% if is_granted('ROLE_PHOTOGRAPHE') and not is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
+                                <li class="nav-item">
+                                    <a class="nav-link {% if app.request.attributes.get('_route') starts with 'app_planche' %}active{% endif %}" href="{{ path('app_planche_index') }}">Planches (Référence)</a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link {% if app.request.get('_route') == 'home' %}active{% endif %}" href="{{ path('home') }}">Accueil</a>
-                        </li>
-                        {% if is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if app.request.get('_route') starts with 'app_ecole_' %}active{% endif %}" href="{{ path('app_ecole_index') }}">Écoles</a>
-                        </li>
-                        {% endif %}
-                        {% if is_granted('ROLE_ADMIN') %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if app.request.get('_route') starts with 'admin_' %}active{% endif %}" href="{{ path('admin_user_index') }}">Administration</a>
-                        </li>
-                        {% endif %}
-                        {% if app.user %}
-                        <li class="nav-item">
-                            <span class="nav-link">{{ app.user.email }}</span>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ path('app_logout') }}">Déconnexion</a>
-                        </li>
+                         {% if app.user %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-person-circle"></i> {{ app.user.userIdentifier }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="{{ path('app_logout') }}"><i class="bi bi-box-arrow-right"></i> Déconnexion</a></li>
+                                </ul>
+                            </li>
                         {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if app.request.get('_route') == 'app_login' %}active{% endif %}" href="{{ path('app_login') }}">Connexion</a>
-                        </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if app.request.attributes.get('_route') == 'app_login' %}active{% endif %}" href="{{ path('app_login') }}">Connexion</a>
+                            </li>
                         {% endif %}
                     </ul>
                 </div>
             </div>
         </nav>
         
-        <main>
+        <main class="container">
+            {# Flash messages - uniquement dans les blocs body spécifiques pour éviter la duplication #}
             {% block body %}{% endblock %}
         </main>
         
-        <footer class="footer mt-5 py-3 bg-light">
+        <footer class="bg-light mt-5 py-3">
             <div class="container text-center">
-                <span class="text-muted">© 2025 Studio Prunelle. Tous droits réservés.</span>
+                <p class="text-muted small">&copy; {{ "now"|date("Y") }} Studio Prunelle - Tous droits réservés</p>
             </div>
         </footer>
+
+        {# Initialisation des tooltips Bootstrap #}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl)
+                })
+            });
+        </script>
     </body>
 </html>

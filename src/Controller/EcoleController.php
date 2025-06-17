@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Ecole;
 use App\Form\EcoleType;
 use App\Repository\EcoleRepository;
-use App\Repository\PriseDeVueRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,7 +16,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EcoleController extends AbstractController
 {
     #[Route('/', name: 'app_ecole_index', methods: ['GET'])]
-    #[IsGranted('ROLE_RESPONSABLE_ADMINISTRATIF')]
     public function index(EcoleRepository $ecoleRepository): Response
     {
         return $this->render('ecole/index.html.twig', [
@@ -50,17 +48,13 @@ class EcoleController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_ecole_show', methods: ['GET'])]
-    public function show(Ecole $ecole, PriseDeVueRepository $priseDeVueRepository): Response
+    public function show(Ecole $ecole): Response
     {
-        // Vérifier si l'utilisateur est autorisé à voir cette école
+        // Utilisez le Voter pour vérifier l'accès
         $this->denyAccessUnlessGranted('VIEW', $ecole);
-        
-        // Récupérer les 5 dernières prises de vue pour cette école
-        $dernieresPrisesDeVue = $priseDeVueRepository->findRecentByEcole($ecole, 5);
         
         return $this->render('ecole/show.html.twig', [
             'ecole' => $ecole,
-            'dernieres_prises_de_vue' => $dernieresPrisesDeVue,
         ]);
     }
 

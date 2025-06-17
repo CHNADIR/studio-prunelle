@@ -1,0 +1,60 @@
+// Styles pour les formulaires
+
+// Conteneur de formulaire
+.form-container {
+  margin-bottom: 2rem;
+}
+
+// Styles des cartes de formulaire
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+}
+
+// Style des champs required
+.required label:after {
+  content: ' *';
+  color: var(--bs-danger);
+}
+
+// Espacement cohérent
+.form-group {
+  margin-bottom: 1rem;
+}
+
+// Amélioration des légendes
+legend {
+  font-weight: 500;
+  color: var(--bs-primary);
+  border-bottom: 1px solid #dee2e6;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+// Style uniforme pour les labels
+.col-form-label {
+  font-weight: 500;
+  text-align: right;
+}
+
+// Amélioration des boutons de formulaire
+.form-buttons {
+  margin-top: 2rem;
+}
+
+// Style pour les champs avec erreur
+.is-invalid {
+  border-color: var(--bs-danger);
+}
+
+// Ajustements pour les appareils mobiles
+@media (max-width: 576px) {
+  .col-form-label {
+    text-align: left;
+  }
+}

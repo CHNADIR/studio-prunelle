@@ -1,35 +1,57 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}TypePrise index{% endblock %}
+{% block title %}Liste des Types de Prise{% endblock %}
 
 {% block body %}
-    <h1>TypePrise index</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Liste des Types de Prise</h1>
+        {% if is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
+            <a href="{{ path('app_type_prise_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Ajouter un type de prise
+            </a>
+        {% endif %}
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for type_prise in type_prises %}
-            <tr>
-                <td>{{ type_prise.id }}</td>
-                <td>{{ type_prise.name }}</td>
-                <td>
-                    <a href="{{ path('app_type_prise_show', {'id': type_prise.id}) }}">show</a>
-                    <a href="{{ path('app_type_prise_edit', {'id': type_prise.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+    {% endfor %}
 
-    <a href="{{ path('app_type_prise_new') }}">Create new</a>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for type_prise_item in type_prises %}
+                <tr>
+                    <td>{{ type_prise_item.id }}</td>
+                    <td>{{ type_prise_item.name }}</td>
+                    <td>
+                        <div class="btn-group btn-group-sm">
+                            <a href="{{ path('app_type_prise_show', {'id': type_prise_item.id}) }}" class="btn btn-info" title="Voir"><i class="bi bi-eye"></i></a>
+                            {% if is_granted('ROLE_RESPONSABLE_ADMINISTRATIF') %}
+                                <a href="{{ path('app_type_prise_edit', {'id': type_prise_item.id}) }}" class="btn btn-warning" title="Modifier"><i class="bi bi-pencil"></i></a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3" class="text-center fst-italic">Aucun type de prise trouvé.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

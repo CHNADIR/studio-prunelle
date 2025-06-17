@@ -1,0 +1,31 @@
+{% macro form_card(title, content) %}
+    <fieldset class="mb-4">
+        <legend class="fs-5 fw-bold text-primary border-bottom pb-2">{{ title }}</legend>
+        <div class="card">
+            <div class="card-body bg-light">
+                {{ content|raw }}
+            </div>
+        </div>
+    </fieldset>
+{% endmacro %}
+
+{% macro buttons(submit_label, submit_icon = 'save', cancel_route = null, cancel_params = {}) %}
+    <div class="d-flex justify-content-end mt-4 gap-2">
+        {% if cancel_route is not null %}
+            <a href="{{ path(cancel_route, cancel_params) }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        {% endif %}
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-{{ submit_icon }}"></i> {{ submit_label|default('Enregistrer') }}
+        </button>
+    </div>
+{% endmacro %}
+
+{% macro form_start(form, options) %}
+    {{ form_start(form, options|default({attr: {class: 'needs-validation'}})) }}
+{% endmacro %}
+
+{% macro form_end(form) %}
+    {{ form_end(form) }}
+{% endmacro %}

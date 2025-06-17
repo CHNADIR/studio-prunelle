@@ -19,7 +19,7 @@ security:
             custom_authenticator: App\Security\LoginFormAuthenticator
             logout:
                 path: app_logout
-                target: home
+                target: app_home
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
@@ -40,7 +40,8 @@ security:
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/ecole/new$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
         - { path: ^/ecole/\d+/edit$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
-        - { path: ^/ecole$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
+        - { path: ^/ecole$, roles: IS_AUTHENTICATED_REMEMBERED }  # Changé pour permettre l'accès à tous les utilisateurs connectés
+        - { path: ^/ecole/\d+$, methods: GET, roles: IS_AUTHENTICATED_REMEMBERED } # Accès à la vue détaillée pour tous les utilisateurs connectés
         - { path: ^/prise/de/vue/new$, roles: ROLE_RESPONSABLE_ADMINISTRATIF }
         - { path: ^/prise/de/vue, roles: [ROLE_PHOTOGRAPHE, ROLE_RESPONSABLE_ADMINISTRATIF] }
         - { path: ^/admin, roles: ROLE_ADMIN }

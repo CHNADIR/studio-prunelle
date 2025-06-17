@@ -18,7 +18,11 @@ class EcoleType extends AbstractType
         $builder
             ->add('code', TextType::class, [
                 'label' => 'Code',
-                'attr' => ['maxlength' => 5, 'placeholder' => 'Ex: E001'],
+                'attr' => [
+                    'maxlength' => 5, 
+                    'placeholder' => 'Ex: E001',
+                    'class' => 'form-control'
+                ],
                 'help' => 'Code unique de l\'école (max 5 caractères)'
             ])
             ->add('genre', ChoiceType::class, [
@@ -30,38 +34,64 @@ class EcoleType extends AbstractType
                     'Lycée' => 'Lycee',
                     'Autre' => 'Autre'
                 ],
-                'placeholder' => 'Choisir un type d\'établissement'
+                'placeholder' => 'Choisir un type d\'établissement',
+                'attr' => ['class' => 'form-select']
             ])
             ->add('nom', TextType::class, [
                 'label' => 'Nom de l\'école',
-                'attr' => ['maxlength' => 255, 'placeholder' => 'Nom complet de l\'établissement']
+                'attr' => [
+                    'maxlength' => 255, 
+                    'placeholder' => 'Nom complet de l\'établissement',
+                    'class' => 'form-control'
+                ]
             ])
             ->add('rue', TextType::class, [
                 'label' => 'Adresse',
-                'attr' => ['maxlength' => 255, 'placeholder' => 'Numéro et nom de rue']
+                'attr' => [
+                    'maxlength' => 255, 
+                    'placeholder' => 'Numéro et nom de rue',
+                    'class' => 'form-control'
+                ]
             ])
             ->add('ville', TextType::class, [
                 'label' => 'Ville',
-                'attr' => ['maxlength' => 100, 'placeholder' => 'Nom de la ville']
+                'attr' => [
+                    'maxlength' => 100, 
+                    'placeholder' => 'Nom de la ville',
+                    'class' => 'form-control'
+                ]
             ])
             ->add('codePostal', TextType::class, [
                 'label' => 'Code postal',
-                'attr' => ['maxlength' => 10, 'placeholder' => '75000']
+                'attr' => [
+                    'maxlength' => 10, 
+                    'placeholder' => '75000',
+                    'class' => 'form-control'
+                ]
             ])
             ->add('telephone', TextType::class, [
                 'label' => 'Téléphone',
                 'required' => false,
-                'attr' => ['maxlength' => 20, 'placeholder' => '01 23 45 67 89']
+                'attr' => [
+                    'maxlength' => 20, 
+                    'placeholder' => '01 23 45 67 89',
+                    'class' => 'form-control'
+                ]
             ])
             ->add('email', EmailType::class, [
                 'label' => 'Email de contact',
                 'required' => false,
-                'attr' => ['maxlength' => 100, 'placeholder' => 'contact@ecole.fr']
+                'attr' => [
+                    'maxlength' => 100, 
+                    'placeholder' => 'contact@ecole.fr',
+                    'class' => 'form-control'
+                ]
             ])
             ->add('active', CheckboxType::class, [
                 'label' => 'École active',
                 'required' => false,
-                'help' => 'Décochez pour désactiver l\'école sans la supprimer'
+                'help' => 'Décochez pour désactiver l\'école sans la supprimer',
+                'attr' => ['class' => 'form-check-input']
             ])
         ;
     }

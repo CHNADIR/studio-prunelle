@@ -1,17 +1,34 @@
-{{ form_start(form) }}
-    {{ form_errors(form) }}
+{% import 'form/form_macros.html.twig' as form_macros %}
 
-    {{ form_row(form.code) }}
-    {{ form_row(form.genre) }}
+{{ form_macros.form_start(form) }}
+
+{% set general_content %}
+    <div class="row">
+        <div class="col-md-6">{{ form_row(form.code) }}</div>
+        <div class="col-md-6">{{ form_row(form.genre) }}</div>
+    </div>
     {{ form_row(form.nom) }}
-    {{ form_row(form.rue) }}
-    {{ form_row(form.ville) }}
-    {{ form_row(form.codePostal) }}
-    {{ form_row(form.telephone) }}
-    {{ form_row(form.email) }}
     {{ form_row(form.active) }}
-    {# Si vous avez ajouté tamponEcole et qu'il est dans le formulaire : #}
-    {# {{ form_row(form.tamponEcole) }} #}
+{% endset %}
+{{ form_macros.form_card('Informations générales', general_content) }}
 
-    <button type="submit" class="btn btn-primary mt-3">{{ button_label|default('form.button.save'|trans) }}</button>
-{{ form_end(form) }}
+{% set address_content %}
+    {{ form_row(form.rue) }}
+    <div class="row">
+        <div class="col-md-8">{{ form_row(form.ville) }}</div>
+        <div class="col-md-4">{{ form_row(form.codePostal) }}</div>
+    </div>
+{% endset %}
+{{ form_macros.form_card('Adresse', address_content) }}
+
+{% set contact_content %}
+    <div class="row">
+        <div class="col-md-6">{{ form_row(form.telephone) }}</div>
+        <div class="col-md-6">{{ form_row(form.email) }}</div>
+    </div>
+{% endset %}
+{{ form_macros.form_card('Contact', contact_content) }}
+
+{{ form_macros.buttons(button_label|default('Enregistrer'), 'save', 'app_ecole_index') }}
+
+{{ form_macros.form_end(form) }}
