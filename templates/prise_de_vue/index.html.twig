@@ -22,6 +22,99 @@
         {% endfor %}
     {% endfor %}
 
+    <div class="card mb-4">
+        <div class="card-header">
+            <a class="d-block text-decoration-none" data-bs-toggle="collapse" href="#searchCollapse">
+                <i class="bi bi-funnel"></i> Recherche avancée
+            </a>
+        </div>
+        <div class="collapse {% if search_criteria|default([])|length > 0 %}show{% endif %}" id="searchCollapse">
+            <div class="card-body">
+                {{ form_start(search_form) }}
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        {{ form_row(search_form.searchTerm) }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        {{ form_label(search_form.dateDebut) }}
+                        {{ form_widget(search_form.dateDebut) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_label(search_form.dateFin) }}
+                        {{ form_widget(search_form.dateFin) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form_label(search_form.photographe, 'Photographe') }}
+                        {{ form_widget(search_form.photographe) }}
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        {{ form_label(search_form.theme, 'Thème') }}
+                        {{ form_widget(search_form.theme) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_label(search_form.typePrise, 'Type de prise') }}
+                        {{ form_widget(search_form.typePrise) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_label(search_form.typeVente, 'Type de vente') }}
+                        {{ form_widget(search_form.typeVente) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_label(search_form.ecole, 'École') }}
+                        {{ form_widget(search_form.ecole) }}
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between">
+                    {% if search_criteria|default([])|length > 0 %}
+                        <a href="{{ path('app_prise_de_vue_index') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-circle"></i> Réinitialiser les filtres
+                        </a>
+                    {% endif %}
+                    <div class="ms-auto">
+                        {{ form_widget(search_form.search) }}
+                    </div>
+                </div>
+                {{ form_end(search_form) }}
+            </div>
+        </div>
+    </div>
+
+    {% if search_criteria|default([])|length > 0 %}
+        <div class="alert alert-info mb-4">
+            <h5><i class="bi bi-filter"></i> Filtres actifs:</h5>
+            <ul class="mb-0">
+                {% if search_criteria.searchTerm is defined and search_criteria.searchTerm %}
+                    <li>Recherche: "{{ search_criteria.searchTerm }}"</li>
+                {% endif %}
+                {% if search_criteria.dateDebut is defined and search_criteria.dateDebut %}
+                    <li>Date début: {{ search_criteria.dateDebut|date('d/m/Y') }}</li>
+                {% endif %}
+                {% if search_criteria.dateFin is defined and search_criteria.dateFin %}
+                    <li>Date fin: {{ search_criteria.dateFin|date('d/m/Y') }}</li>
+                {% endif %}
+                {% if search_criteria.photographe is defined and search_criteria.photographe %}
+                    <li>Photographe: {{ search_criteria.photographe.email }}</li>
+                {% endif %}
+                {% if search_criteria.theme is defined and search_criteria.theme %}
+                    <li>Thème: {{ search_criteria.theme.name }}</li>
+                {% endif %}
+                {% if search_criteria.typePrise is defined and search_criteria.typePrise %}
+                    <li>Type de prise: {{ search_criteria.typePrise.name }}</li>
+                {% endif %}
+                {% if search_criteria.typeVente is defined and search_criteria.typeVente %}
+                    <li>Type de vente: {{ search_criteria.typeVente.name }}</li>
+                {% endif %}
+                {% if search_criteria.ecole is defined and search_criteria.ecole %}
+                    <li>École: {{ search_criteria.ecole.nom }}</li>
+                {% endif %}
+            </ul>
+        </div>
+    {% endif %}
+
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead class="table-dark">
@@ -65,11 +158,38 @@
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="7" class="text-center fst-italic">Aucune prise de vue trouvée.</td>
+                    <td colspan="7" class="text-center fst-italic">
+                        {% if search_criteria|default([])|length > 0 %}
+                            Aucune prise de vue ne correspond à votre recherche.
+                        {% else %}
+                            Aucune prise de vue trouvée.
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
     </div>
+
+    {% if prise_de_vues|length > 0 %}
+        <div class="mt-3">
+            <p class="text-muted">{{ prise_de_vues|length }} prise(s) de vue trouvée(s)</p>
+        </div>
+    {% endif %}
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialisation automatique du collapse si des filtres sont actifs
+            var searchCollapse = document.getElementById('searchCollapse');
+            if (searchCollapse && searchCollapse.querySelectorAll('input[value]:not([value=""])').length > 0) {
+                new bootstrap.Collapse(searchCollapse, {
+                    toggle: true
+                });
+            }
+        });
+    </script>
 {% endblock %}

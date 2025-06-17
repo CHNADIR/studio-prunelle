@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\PriseDeVue;
 use App\Form\PriseDeVueType;
+use App\Form\PriseDeVueSearchType;
 use App\Repository\PriseDeVueRepository;
 use App\Security\Voter\PriseDeVueVoter;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,27 +12,39 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/prise/de/vue')]
-final class PriseDeVueController extends AbstractController
+class PriseDeVueController extends AbstractController
 {
     #[Route('/', name: 'app_prise_de_vue_index', methods: ['GET'])]
-    public function index(PriseDeVueRepository $priseDeVueRepository): Response
+    public function index(Request $request, PriseDeVueRepository $priseDeVueRepository, UserInterface $user = null): Response
     {
-        // Si c'est un photographe, montrer uniquement ses prises de vue
-        if ($this->isGranted('ROLE_PHOTOGRAPHE') && 
-            !$this->isGranted('ROLE_ADMIN') && 
-            !$this->isGranted('ROLE_RESPONSABLE_ADMINISTRATIF')) {
-            $prisesDeVue = $priseDeVueRepository->findBy(['photographe' => $this->getUser()]);
-            $title = 'Mon planning';
-        } else {
-            $prisesDeVue = $priseDeVueRepository->findAll();
-            $title = 'Liste des prises de vue';
+        // Création du formulaire de recherche
+        $searchForm = $this->createForm(PriseDeVueSearchType::class);
+        $searchForm->handleRequest($request);
+        
+        $searchCriteria = [];
+        
+        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+            $searchCriteria = $searchForm->getData();
         }
         
+        // Déterminer si l'utilisateur est un photographe sans être admin/responsable
+        $isPhotographeOnly = $this->isGranted('ROLE_PHOTOGRAPHE') && 
+                           !($this->isGranted('ROLE_RESPONSABLE_ADMINISTRATIF') || $this->isGranted('ROLE_ADMIN'));
+        
+        // Si c'est un photographe simple, on limite aux prises de vue qu'il a réalisées
+        $photographer = $isPhotographeOnly ? $user : null;
+        
+        $priseDeVues = $priseDeVueRepository->findBySearchCriteria($searchCriteria, $photographer);
+
         return $this->render('prise_de_vue/index.html.twig', [
-            'prise_de_vues' => $prisesDeVue,
-            'title' => $title
+            'prise_de_vues' => $priseDeVues,
+            'search_form' => $searchForm->createView(),
+            'search_criteria' => $searchCriteria,
+            'title' => $isPhotographeOnly ? 'Mes prises de vue' : 'Liste des prises de vue',
         ]);
     }
 
