@@ -15,29 +15,20 @@ class EcoleRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Ecole::class);
     }
-
-    //    /**
-    //     * @return Ecole[] Returns an array of Ecole objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('e.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Ecole
-    //    {
-    //        return $this->createQueryBuilder('e')
-    //            ->andWhere('e.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    
+    /**
+     * Recherche des écoles selon différents critères
+     */
+    public function findBySearchCriteria(?string $searchTerm = null): array
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->orderBy('e.nom', 'ASC');
+        
+        if ($searchTerm) {
+            $qb->andWhere('e.nom LIKE :searchTerm OR e.code LIKE :searchTerm OR e.ville LIKE :searchTerm')
+               ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+        
+        return $qb->getQuery()->getResult();
+    }
 }

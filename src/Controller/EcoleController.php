@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Ecole;
 use App\Form\EcoleType;
+use App\Form\EcoleSearchType;
 use App\Repository\EcoleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,10 +17,23 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class EcoleController extends AbstractController
 {
     #[Route('/', name: 'app_ecole_index', methods: ['GET'])]
-    public function index(EcoleRepository $ecoleRepository): Response
+    public function index(Request $request, EcoleRepository $ecoleRepository): Response
     {
+        $searchForm = $this->createForm(EcoleSearchType::class);
+        $searchForm->handleRequest($request);
+        
+        $searchTerm = null;
+        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+            $searchCriteria = $searchForm->getData();
+            $searchTerm = $searchCriteria['searchTerm'] ?? null;
+        }
+        
+        $ecoles = $ecoleRepository->findBySearchCriteria($searchTerm);
+        
         return $this->render('ecole/index.html.twig', [
-            'ecoles' => $ecoleRepository->findAll(),
+            'ecoles' => $ecoles,
+            'search_form' => $searchForm->createView(),
+            'search_term' => $searchTerm,
         ]);
     }
 

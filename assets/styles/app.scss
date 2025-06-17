@@ -62,3 +62,28 @@ footer {
 .dropdown-item.active {
     background-color: var(--bs-primary);
 }
+
+// Style pour la barre de recherche
+.search-bar {
+  .input-group {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-control {
+    border-right: 0;
+    &:focus {
+      box-shadow: none;
+    }
+  }
+
+  .btn-search {
+    border-left: 0;
+    background-color: white;
+    color: $primary;
+    
+    &:hover {
+      background-color: $primary;
+      color: white;
+    }
+  }
+}
